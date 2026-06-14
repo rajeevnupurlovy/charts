@@ -213,7 +213,7 @@
             }
         }
 
-        // Initialize Native TradingView Widget Layouts
+        // Initialize Native TradingView Widget Layouts synced with your layout ID
         function buildWidget(containerId, widgetKey) {
             widgets[widgetKey] = new TradingView.widget({
                 "autosize": true,
@@ -227,7 +227,9 @@
                 "enable_publishing": false,
                 "hide_side_toolbar": false,
                 "allow_symbol_change": true,
-                "container_id": containerId
+                "container_id": containerId,
+                // FORCES TRADINGVIEW TO LOAD YOUR EXACT SAVED INDICATORS/CHART LAYOUT
+                "chart": "WFrHan6t" 
             });
         }
 
