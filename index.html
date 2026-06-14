@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Trading Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #0c1017;
+            --card-color: #161b22;
+            --accent-color: #2f81f7;
+            --text-color: #f0f6fc;
+            --danger-color: #f85149;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Lock Screen Styles */
+        #lock-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #070a0e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .lock-box {
+            background: var(--card-color);
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        input[type="password"] {
+            background: var(--bg-color);
+            border: 1px solid #30363d;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 15px;
+            width: 80%;
+            text-align: center;
+        }
+
+        button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover { background: #1f6feb; }
+
+        /* Dashboard Styles */
+        header {
+            background-color: var(--card-color);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .logo { font-size: 1.2rem; font-weight: bold; color: var(--accent-color); }
+        
+        .nav-tabs { display: flex; gap: 10px; }
+        
+        .tab-btn {
+            background: #21262d;
+            color: var(--text-color);
+            border: 1px solid #30363d;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            padding: 15px;
+            gap: 15px;
+            box-sizing: border-box;
+        }
+
+        .chart-box {
+            flex: 1;
+            background: var(--card-color);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-header {
+            background: #1f242c;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-bottom: 1px solid #30363d;
+        }
+
+        iframe {
+            flex: 1;
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        #error-msg { color: var(--danger-color); margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="lock-screen">
+        <div class="lock-box">
+            <h2>🔒 Device Verification Required</h2>
+            <p>This software is locked to an authorized hardware device.</p>
+            <div id="auth-section">
+                <p style="font-size: 0.85rem; color: #8b949e;">Enter Master Activation Key to pair this laptop:</p>
+                <input type="password" id="key-input" placeholder="Enter Secret Key">
+                <br>
+                <button onclick="verifyAndActivate()">Activate This Device</button>
+                <p id="error-msg">Invalid Activation Key!</p>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo">🎯 AlphaScalp Pro Dashboard</div>
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchLayout('dual')">Dual Chart Mode</button>
+            <button class="tab-btn" onclick="switchLayout('single1')">Indicator 1 (Full)</button>
+            <button class="tab-btn" onclick="switchLayout('single2')">Indicator 2 (Full)</button>
+        </div>
+    </header>
+
+    <div class="container" id="dashboard-container">
+        <div class="chart-box" id="box-1">
+            <div class="chart-header">📊 Premium Indicator Setup A</div>
+            <iframe src="https://www.tradingview.com/chart/WFrHan6t/" allowfullscreen></iframe>
+        </div>
+
+        <div class="chart-box" id="box-2">
+            <div class="chart-header">📈 Premium Indicator Setup B (Placeholder)</div>
+            <iframe src="https://www.tradingview.com/chart/WFrHan6t/" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script>
+        // --- SECURITY CONFIGURATION ---
+        // Change this to any secret password you want. Only you will use this once on the client's machine.
+        const MASTER_ACTIVATION_KEY = "MySecretAdmin99#"; 
+        const HARDWARE_TOKEN_NAME = "device_secure_identity_token";
+        const APPROVED_TOKEN_VALUE = "X978-B231-LL92-MM10"; // Randomized verified string
+
+        // Check if this specific laptop browser has already been activated
+        window.onload = function() {
+            const systemToken = localStorage.getItem(HARDWARE_TOKEN_NAME);
+            if (systemToken === APPROVED_TOKEN_VALUE) {
+                // Device is authorized. Remove lock screen immediately.
+                document.getElementById('lock-screen').style.display = 'none';
+            }
+        };
+
+        // Activation function run by you on client's laptop
+        function verifyAndActivate() {
+            const userInput = document.getElementById('key-input').value;
+            if (userInput === MASTER_ACTIVATION_KEY) {
+                // Drop the permanent lock token into this specific browser session
+                localStorage.setItem(HARDWARE_TOKEN_NAME, APPROVED_TOKEN_VALUE);
+                document.getElementById('lock-screen').style.display = 'none';
+            } else {
+                const errMsg = document.getElementById('error-msg');
+                errMsg.style.display = 'block';
+                setTimeout(() => { errMsg.style.display = 'none'; }, 3000);
+            }
+        }
+
+        // --- DASHBOARD FUNCTIONS ---
+        // Dynamically switch layouts to accommodate up to 5 indicators seamlessly
+        function switchLayout(mode) {
+            const box1 = document.getElementById('box-1');
+            const box2 = document.getElementById('box-2');
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            if (mode === 'dual') {
+                box1.style.display = 'flex';
+                box2.style.display = 'flex';
+                event.target.classList.add('active');
+            } else if (mode === 'single1') {
+                box1.style.display = 'flex';
+                box2.style.display = 'none';
+                event.target.classList.add('active');
+            } else if (mode === 'single2') {
+                box1.style.display = 'none';
+                box2.style.display = 'flex';
+                event.target.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
