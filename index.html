@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0254)file:///C:/Users/admin/AppData/Local/Packages/Claude_pzs8sxrjxfjjc/LocalCache/Roaming/Claude/local-agent-mode-sessions/b0527a4f-7b09-4696-8fb8-7fd5702baa62/0c593d8d-b087-4b54-ace2-507efcfb98d6/local_9772d213-f6b8-41ac-9604-198cd8f1efec/outputs/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AlphaScalp Multi-Indicator Dashboard</title>
 <style>
@@ -13,6 +13,7 @@
   body{margin:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
        background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
+  /* ---------- Lock / status screen ---------- */
   #gate{position:fixed;inset:0;background:#070a0e;z-index:9999;display:flex;
         flex-direction:column;justify-content:center;align-items:center;padding:20px}
   .gate-box{background:var(--card);padding:34px 30px;border-radius:10px;border:1px solid var(--line);
@@ -24,6 +25,7 @@
   @keyframes spin{to{transform:rotate(360deg)}}
   .msg-ok{color:var(--ok)} .msg-err{color:var(--danger)}
 
+  /* ---------- Header ---------- */
   header{background:var(--card);padding:10px 18px;display:flex;justify-content:space-between;
          align-items:center;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:10px}
   .logo{font-size:1.15rem;font-weight:bold;color:var(--accent)}
@@ -32,6 +34,7 @@
            padding:7px 13px;border-radius:6px;cursor:pointer;font-size:.85rem}
   .tab-btn.active{background:var(--accent);border-color:var(--accent)}
 
+  /* ---------- Charts ---------- */
   .container{flex:1;display:flex;padding:14px;gap:14px;overflow:auto}
   .chart-box{flex:1;min-width:300px;background:var(--card);border:1px solid var(--line);
              border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
@@ -43,6 +46,7 @@
   iframe{flex:1;width:100%;border:none;background:#0d1117}
   .frame-note{padding:6px 14px;font-size:.72rem;color:var(--muted);background:#10151c;border-top:1px solid var(--line)}
 
+  /* ---------- Generic inputs / buttons ---------- */
   input,button,select{font-family:inherit}
   input,select{background:var(--bg);border:1px solid var(--line);color:#fff;padding:9px 11px;
                border-radius:6px;width:100%;margin-top:6px}
@@ -53,6 +57,7 @@
                background:#21262d;color:#fff;margin:0 3px 0 0}
   button.danger{background:#3d1418;border-color:var(--danger);color:#ffb3ae}
 
+  /* ---------- Admin ---------- */
   #admin{display:none;flex:1;overflow:auto;padding:22px}
   .admin-card{background:var(--card);border:1px solid var(--line);border-radius:10px;
               padding:18px 20px;margin-bottom:18px;max-width:1000px}
@@ -72,20 +77,23 @@
 </head>
 <body>
 
+<!-- ================= GATE / LOCK SCREEN ================= -->
 <div id="gate">
   <div class="gate-box" id="gate-inner">
-    <div class="spinner" id="gate-spinner"></div>
-    <h2 id="gate-title">Verifying access…</h2>
-    <p id="gate-text">Please wait while this device is checked.</p>
+    <div class="spinner" id="gate-spinner" style="display: none;"></div>
+    <h2 id="gate-title"><span class="msg-err">This link is missing its access key.</span></h2>
+    <p id="gate-text">You need a complete link such as …?key=XXXX-XXXX-XXXX.</p>
   </div>
 </div>
 
+<!-- ================= MAIN DASHBOARD ================= -->
 <header id="topbar" style="display:none">
   <div class="logo">🎯 AlphaScalp Multi-Indicator Dashboard</div>
   <div class="nav-tabs" id="tabs"></div>
 </header>
 <div class="container" id="charts" style="display:none"></div>
 
+<!-- ================= ADMIN PANEL ================= -->
 <div id="admin">
   <div class="admin-card" id="admin-login">
     <h3>🔐 Admin Login</h3>
@@ -121,7 +129,7 @@
       <h3>📈 Chart links shown in the dashboard</h3>
       <p class="hint">Add or edit the TradingView charts every authorised user will see. Click Save when done.</p>
       <div id="chart-editor"></div>
-      <button class="small" onclick="addChartRow('','')">+ Add chart</button>
+      <button class="small" onclick="addChartRow(&#39;&#39;,&#39;&#39;)">+ Add chart</button>
       <button class="primary" onclick="saveCharts()">Save charts</button>
       <p class="hint" id="charts-msg"></p>
     </div>
@@ -129,11 +137,17 @@
 </div>
 
 <script>
+/* ============================================================
+   STEP 1 of 2:  paste your deployed Apps Script /exec URL here
+   ============================================================ */
 const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzyVpKkatF31M3UXaYJe8SfoyciE4HGkn9yhA1ZEktXVTny9JwMGklAv98XuaFMO8E8jg/exec";
 
+/* ---------- small helpers ---------- */
 const $ = id => document.getElementById(id);
 const params = new URLSearchParams(location.search);
 
+// Talk to the backend WITHOUT a custom Content-Type so the browser
+// does not send a CORS preflight (which Apps Script can't answer).
 async function api(payload){
   const r = await fetch(BACKEND_URL, {
     method:"POST",
@@ -143,6 +157,7 @@ async function api(payload){
   return r.json();
 }
 
+// Stable per-browser device id
 function deviceId(){
   let id = localStorage.getItem("asd_device_id");
   if(!id){
@@ -153,6 +168,9 @@ function deviceId(){
   return id;
 }
 
+/* ============================================================
+   ADMIN MODE  ( open the page with  ?admin=1 )
+   ============================================================ */
 let ADMIN_PASS = "";
 let CURRENT_CHARTS = [];
 
@@ -228,6 +246,7 @@ async function refresh(){
   if(res.ok) renderLicenses(res.licenses);
 }
 
+/* ----- chart editor ----- */
 function renderChartEditor(){
   $("chart-editor").innerHTML = "";
   CURRENT_CHARTS.forEach((c,i)=>addChartRow(c.title, c.url, i));
@@ -252,6 +271,9 @@ async function saveCharts(){
   $("charts-msg").innerHTML = res.ok ? '<span class="msg-ok">Saved.</span>' : '<span class="msg-err">'+res.msg+'</span>';
 }
 
+/* ============================================================
+   USER MODE  ( normal link with ?key=... )
+   ============================================================ */
 async function verifyAccess(){
   const key = params.get("key");
   if(!key){ return gateError("This link is missing its access key.",
@@ -273,52 +295,57 @@ function gateError(title, text){
 
 function buildDashboard(charts){
   if(!charts.length){ return gateError("No charts configured", "Ask the owner to add chart links in the admin panel."); }
+  window.__charts = charts;
 
+  // header button: open the first two charts side by side
   const tabs = $("tabs");
   tabs.innerHTML = "";
   if(charts.length >= 2){
-    const dual = mkTab("Dual View", ()=>showDual());
-    dual.classList.add("active");
-    tabs.appendChild(dual);
+    const both = document.createElement("button");
+    both.className = "tab-btn active";
+    both.textContent = "🔲 Open both charts side by side";
+    both.onclick = ()=> openSideBySide(charts[0].url, charts[1].url);
+    tabs.appendChild(both);
   }
-  charts.forEach((c,i)=> tabs.appendChild(mkTab(c.title || ("Chart "+(i+1)), ()=>showSingle(i))));
 
+  // main area: one launch card per chart
   const cont = $("charts");
   cont.innerHTML = "";
+  cont.style.flexWrap = "wrap";
   charts.forEach((c,i)=>{
+    const title = c.title || ("Chart "+(i+1));
     const box = document.createElement("div");
     box.className = "chart-box";
-    box.id = "box-"+i;
-    box.style.display = "none";
+    box.style.minHeight = "260px";
     box.innerHTML =
-      "<div class='chart-header'><span>"+(c.title||("Chart "+(i+1)))+"</span>"
-        +"<a class='open-btn' href='"+c.url+"' target='_blank' rel='noopener'>Open chart ↗</a></div>"
-      +"<iframe src='"+c.url+"' loading='lazy'></iframe>"
-      +"<div class='frame-note'>If the chart area is blank, TradingView blocks in-page embedding — use the “Open chart ↗” button above.</div>";
+      "<div class='chart-header'><span>"+title+"</span></div>"
+     +"<div style='flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:30px;text-align:center'>"
+       +"<div style='font-size:2.6rem'>📈</div>"
+       +"<a class='open-btn' style='padding:12px 22px;font-size:1rem' href='"+c.url+"' target='_blank' rel='noopener'>Open "+title+" ↗</a>"
+       +"<div class='hint'>Opens the live chart on TradingView in a new tab.</div>"
+     +"</div>";
     cont.appendChild(box);
   });
 
   $("gate").style.display = "none";
   $("topbar").style.display = "flex";
   cont.style.display = "flex";
-
-  window.__charts = charts;
-  charts.length >= 2 ? showDual() : showSingle(0);
 }
 
-function mkTab(label, fn){
-  const b = document.createElement("button");
-  b.className = "tab-btn";
-  b.textContent = label;
-  b.onclick = (ev)=>{ document.querySelectorAll(".tab-btn").forEach(x=>x.classList.remove("active"));
-                      ev.target.classList.add("active"); fn(); };
-  return b;
+// Open two chart URLs as separate browser windows, left and right.
+function openSideBySide(url1, url2){
+  const w = Math.max(480, Math.floor(screen.availWidth / 2));
+  const h = screen.availHeight;
+  const left  = window.open(url1, "asd_left",  "left=0,top=0,width="+w+",height="+h);
+  const right = window.open(url2, "asd_right", "left="+w+",top=0,width="+w+",height="+h);
+  if(!left || !right){
+    alert("Your browser blocked a pop-up window.\n\nClick the pop-up icon in the address bar, choose \"Always allow pop-ups from this site\", then click the button again.");
+  }
 }
-function hideAll(){ (window.__charts||[]).forEach((_,i)=> $("box-"+i).style.display="none"); }
-function showDual(){ hideAll(); $("box-0").style.display="flex"; if($("box-1")) $("box-1").style.display="flex"; }
-function showSingle(i){ hideAll(); $("box-"+i).style.display="flex"; }
 
+/* ---------- boot ---------- */
 if(params.get("admin") !== "1"){ verifyAccess(); }
 </script>
-</body>
-</html>
+
+
+</body></html>
