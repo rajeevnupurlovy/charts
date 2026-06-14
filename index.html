@@ -100,10 +100,16 @@
             background: #21262d;
             color: white;
             border: 1px solid #30363d;
-            padding: 6px 12px;
+            padding: 8px 14px;
             border-radius: 6px;
             font-weight: bold;
+            font-size: 0.9rem;
             cursor: pointer;
+            outline: none;
+        }
+
+        #master-symbol-selector:focus {
+            border-color: var(--accent-color);
         }
 
         .container {
@@ -159,13 +165,9 @@
     <header>
         <div class="logo">🎯 AlphaScalp Master Sync Dashboard</div>
         <div class="controls">
-            <label for="master-symbol-selector" style="font-size:0.9rem; color:#8b949e;">Global Symbol Sync:</label>
             <select id="master-symbol-selector" onchange="changeGlobalSymbol(this.value)">
                 <option value="NSE:NIFTY">NIFTY 50</option>
                 <option value="NSE:BANKNIFTY">BANK NIFTY</option>
-                <option value="NSE:CNXFINANCE">FIN NIFTY</option>
-                <option value="NSE:RELIANCE">RELIANCE</option>
-                <option value="NSE:HDFCBANK">HDFC BANK</option>
             </select>
 
             <div class="nav-tabs">
@@ -211,7 +213,7 @@
             }
         }
 
-        // Initialize Native High-Performance TradingView Objects
+        // Initialize Native TradingView Widget Layouts
         function buildWidget(containerId, widgetKey) {
             widgets[widgetKey] = new TradingView.widget({
                 "autosize": true,
@@ -237,12 +239,11 @@
             buildWidget("tv-chart-5", "w5");
         }
 
-        // AUTOMATIC GLOBAL SYMBOL SYNC FUNCTION
+        // Automatic Sync Engine
         function changeGlobalSymbol(newSymbol) {
             currentSymbol = newSymbol;
             const shortName = newSymbol.split(":")[1];
             
-            // Instantly updates ticker symbol fields across all charts simultaneously
             for (let i = 1; i <= 5; i++) {
                 document.getElementById(`sym-lbl-${i}`).innerText = `(${shortName})`;
             }
@@ -254,9 +255,15 @@
             if(widgets.w5) widgets.w5.chart().setSymbol(newSymbol);
         }
 
-        // Tabs layout manager
+        // Tabs Panel Manager
         function switchLayout(mode) {
-            const allBoxes = [document.getElementById('box-1'), document.getElementById('box-2'), document.getElementById('box-3'), document.getElementById('box-4'), document.getElementById('box-5')];
+            const allBoxes = [
+                document.getElementById('box-1'), 
+                document.getElementById('box-2'), 
+                document.getElementById('box-3'), 
+                document.getElementById('box-4'), 
+                document.getElementById('box-5')
+            ];
             const buttons = document.querySelectorAll('.tab-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
             if(event) event.target.classList.add('active');
