@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Multi-Indicator Dashboard</title>
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         :root {
             --bg-color: #0c1017;
@@ -96,22 +95,6 @@
             border-color: var(--accent-color);
         }
 
-        #master-symbol-selector {
-            background: #21262d;
-            color: white;
-            border: 1px solid #30363d;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            cursor: pointer;
-            outline: none;
-        }
-
-        #master-symbol-selector:focus {
-            border-color: var(--accent-color);
-        }
-
         .container {
             flex: 1;
             display: flex;
@@ -140,10 +123,11 @@
             justify-content: space-between;
         }
 
-        .chart-container-div {
+        iframe {
             flex: 1;
             width: 100%;
             height: 100%;
+            border: none;
         }
 
         #error-msg { color: var(--danger-color); margin-top: 10px; display: none; }
@@ -163,42 +147,33 @@
     </div>
 
     <header>
-        <div class="logo">🎯 AlphaScalp Master Sync Dashboard</div>
+        <div class="logo">🎯 AlphaScalp Multi-Indicator Dashboard</div>
         <div class="controls">
-            <select id="master-symbol-selector" onchange="changeGlobalSymbol(this.value)">
-                <option value="NSE:NIFTY">NIFTY 50</option>
-                <option value="NSE:BANKNIFTY">BANK NIFTY</option>
-            </select>
-
             <div class="nav-tabs">
                 <button class="tab-btn active" onclick="switchLayout('dual')">Dual Split View</button>
-                <button class="tab-btn" onclick="switchLayout('single1')">Indicator 1</button>
-                <button class="tab-btn" onclick="switchLayout('single2')">Indicator 2</button>
-                <button class="tab-btn" onclick="switchLayout('single3')">Indicator 3</button>
-                <button class="tab-btn" onclick="switchLayout('single4')">Indicator 4</button>
-                <button class="tab-btn" onclick="switchLayout('single5')">Indicator 5</button>
+                <button class="tab-btn" onclick="switchLayout('single1')">Indicator Setup 1</button>
+                <button class="tab-btn" onclick="switchLayout('single2')">Indicator Setup 2</button>
+                <button class="tab-btn" onclick="switchLayout('single3')">Indicator Setup 3</button>
+                <button class="tab-btn" onclick="switchLayout('single4')">Indicator Setup 4</button>
+                <button class="tab-btn" onclick="switchLayout('single5')">Indicator Setup 5</button>
             </div>
         </div>
     </header>
 
     <div class="container" id="dashboard-container">
-        <div class="chart-box" id="box-1"><div class="chart-header">📊 Indicator Set 1 <span id="sym-lbl-1">(NIFTY)</span></div><div id="tv-chart-1" class="chart-container-div"></div></div>
-        <div class="chart-box" id="box-2"><div class="chart-header">📈 Indicator Set 2 <span id="sym-lbl-2">(NIFTY)</span></div><div id="tv-chart-2" class="chart-container-div"></div></div>
-        <div class="chart-box" id="box-3" style="display:none;"><div class="chart-header">🎯 Indicator Set 3 <span id="sym-lbl-3">(NIFTY)</span></div><div id="tv-chart-3" class="chart-container-div"></div></div>
-        <div class="chart-box" id="box-4" style="display:none;"><div class="chart-header">⚡ Indicator Set 4 <span id="sym-lbl-4">(NIFTY)</span></div><div id="tv-chart-4" class="chart-container-div"></div></div>
-        <div class="chart-box" id="box-5" style="display:none;"><div class="chart-header">💎 Indicator Set 5 <span id="sym-lbl-5">(NIFTY)</span></div><div id="tv-chart-5" class="chart-container-div"></div></div>
+        <div class="chart-box" id="box-1"><div class="chart-header">📊 Indicator Set 1</div><iframe src="https://www.tradingview.com/chart/WFrHan6t/?theme=dark"></iframe></div>
+        <div class="chart-box" id="box-2"><div class="chart-header">📈 Indicator Set 2</div><iframe src="https://www.tradingview.com/chart/WFrHan6t/?theme=dark"></iframe></div>
+        <div class="chart-box" id="box-3" style="display:none;"><div class="chart-header">🎯 Indicator Set 3</div><iframe src="https://www.tradingview.com/chart/WFrHan6t/?theme=dark"></iframe></div>
+        <div class="chart-box" id="box-4" style="display:none;"><div class="chart-header">⚡ Indicator Set 4</div><iframe src="https://www.tradingview.com/chart/WFrHan6t/?theme=dark"></iframe></div>
+        <div class="chart-box" id="box-5" style="display:none;"><div class="chart-header">💎 Indicator Set 5</div><iframe src="https://www.tradingview.com/chart/WFrHan6t/?theme=dark"></iframe></div>
     </div>
 
     <script>
         const MASTER_ACTIVATION_KEY = "MySecretAdmin99#"; 
-        let currentSymbol = "NSE:NIFTY";
-        let widgets = {};
 
-        // Security Authentication Process
         window.onload = function() {
             if (localStorage.getItem("device_secure_identity_token") === "X978-B231-LL92-MM10") {
                 document.getElementById('lock-screen').style.display = 'none';
-                initAllCharts();
             }
         };
 
@@ -206,58 +181,12 @@
             if (document.getElementById('key-input').value === MASTER_ACTIVATION_KEY) {
                 localStorage.setItem("device_secure_identity_token", "X978-B231-LL92-MM10");
                 document.getElementById('lock-screen').style.display = 'none';
-                initAllCharts();
             } else {
                 document.getElementById('error-msg').style.display = 'block';
                 setTimeout(() => { document.getElementById('error-msg').style.display = 'none'; }, 2000);
             }
         }
 
-        // Initialize Native TradingView Widget Layouts synced with your layout ID
-        function buildWidget(containerId, widgetKey) {
-            widgets[widgetKey] = new TradingView.widget({
-                "autosize": true,
-                "symbol": currentSymbol,
-                "interval": "5",
-                "timezone": "Asia/Kolkata",
-                "theme": "dark",
-                "style": "1",
-                "locale": "en",
-                "toolbar_bg": "#f1f3f6",
-                "enable_publishing": false,
-                "hide_side_toolbar": false,
-                "allow_symbol_change": true,
-                "container_id": containerId,
-                // FORCES TRADINGVIEW TO LOAD YOUR EXACT SAVED INDICATORS/CHART LAYOUT
-                "chart": "WFrHan6t" 
-            });
-        }
-
-        function initAllCharts() {
-            buildWidget("tv-chart-1", "w1");
-            buildWidget("tv-chart-2", "w2");
-            buildWidget("tv-chart-3", "w3");
-            buildWidget("tv-chart-4", "w4");
-            buildWidget("tv-chart-5", "w5");
-        }
-
-        // Automatic Sync Engine
-        function changeGlobalSymbol(newSymbol) {
-            currentSymbol = newSymbol;
-            const shortName = newSymbol.split(":")[1];
-            
-            for (let i = 1; i <= 5; i++) {
-                document.getElementById(`sym-lbl-${i}`).innerText = `(${shortName})`;
-            }
-            
-            if(widgets.w1) widgets.w1.chart().setSymbol(newSymbol);
-            if(widgets.w2) widgets.w2.chart().setSymbol(newSymbol);
-            if(widgets.w3) widgets.w3.chart().setSymbol(newSymbol);
-            if(widgets.w4) widgets.w4.chart().setSymbol(newSymbol);
-            if(widgets.w5) widgets.w5.chart().setSymbol(newSymbol);
-        }
-
-        // Tabs Panel Manager
         function switchLayout(mode) {
             const allBoxes = [
                 document.getElementById('box-1'), 
