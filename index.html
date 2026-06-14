@@ -24,7 +24,6 @@
             overflow: hidden;
         }
 
-        /* Lock Screen Styles */
         #lock-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -69,7 +68,6 @@
 
         button:hover { background: #1f6feb; }
 
-        /* Dashboard Styles */
         header {
             background-color: var(--card-color);
             padding: 10px 20px;
@@ -80,7 +78,6 @@
         }
 
         .logo { font-size: 1.2rem; font-weight: bold; color: var(--accent-color); }
-        
         .nav-tabs { display: flex; gap: 10px; }
         
         .tab-btn {
@@ -123,9 +120,8 @@
             border-bottom: 1px solid #30363d;
         }
 
-        iframe {
+        .tradingview-widget-container {
             flex: 1;
-            border: none;
             width: 100%;
             height: 100%;
         }
@@ -152,45 +148,67 @@
     <header>
         <div class="logo">🎯 AlphaScalp Pro Dashboard</div>
         <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchLayout('dual')">Dual Chart Mode</button>
-            <button class="tab-btn" onclick="switchLayout('single1')">Indicator 1 (Full)</button>
-            <button class="tab-btn" onclick="switchLayout('single2')">Indicator 2 (Full)</button>
+            <button class="tab-btn active" onclick="switchLayout('dual')">Dual View</button>
+            <button class="tab-btn" onclick="switchLayout('single1')">Indicator Setup 1</button>
+            <button class="tab-btn" onclick="switchLayout('single2')">Indicator Setup 2</button>
+            <button class="tab-btn" onclick="switchLayout('single3')">Indicator Setup 3</button>
+            <button class="tab-btn" onclick="switchLayout('single4')">Indicator Setup 4</button>
+            <button class="tab-btn" onclick="switchLayout('single5')">Indicator Setup 5</button>
         </div>
     </header>
 
     <div class="container" id="dashboard-container">
         <div class="chart-box" id="box-1">
-            <div class="chart-header">📊 Premium Indicator Setup A</div>
-            <iframe src="https://www.tradingview.com/chart/WFrHan6t/" allowfullscreen></iframe>
+            <div class="chart-header">📊 Premium Indicator Setup 1</div>
+            <div class="tradingview-widget-container">
+                <iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_1&symbol=FX_IDC%3AINRUSD&interval=5&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Asia%2FKolkata&studies_overrides=%7B%7D&overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&locale=en&utm_source=localhost&utm_medium=widget&utm_campaign=chart&utm_term=FX_IDC%3AINRUSD" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
         </div>
 
         <div class="chart-box" id="box-2">
-            <div class="chart-header">📈 Premium Indicator Setup B (Placeholder)</div>
-            <iframe src="https://www.tradingview.com/chart/WFrHan6t/" allowfullscreen></iframe>
+            <div class="chart-header">📈 Premium Indicator Setup 2</div>
+            <div class="tradingview-widget-container">
+                <iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_2&symbol=NSE%3ANIFTY&interval=5&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Asia%2FKolkata&locale=en" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+
+        <div class="chart-box" id="box-3" style="display:none;">
+            <div class="chart-header">🎯 Premium Indicator Setup 3</div>
+            <div class="tradingview-widget-container">
+                <iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_3&symbol=NSE%3ABANKNIFTY&interval=5&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Asia%2FKolkata&locale=en" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+
+        <div class="chart-box" id="box-4" style="display:none;">
+            <div class="chart-header">⚡ Premium Indicator Setup 4</div>
+            <div class="tradingview-widget-container">
+                <iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_4&symbol=NSE%3ACNXFINANCE&interval=5&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Asia%2FKolkata&locale=en" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+
+        <div class="chart-box" id="box-5" style="display:none;">
+            <div class="chart-header">💎 Premium Indicator Setup 5</div>
+            <div class="tradingview-widget-container">
+                <iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_5&symbol=BSE%3ASENSEX&interval=5&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Asia%2FKolkata&locale=en" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- SECURITY CONFIGURATION ---
-        // Change this to any secret password you want. Only you will use this once on the client's machine.
         const MASTER_ACTIVATION_KEY = "MySecretAdmin99#"; 
         const HARDWARE_TOKEN_NAME = "device_secure_identity_token";
-        const APPROVED_TOKEN_VALUE = "X978-B231-LL92-MM10"; // Randomized verified string
+        const APPROVED_TOKEN_VALUE = "X978-B231-LL92-MM10";
 
-        // Check if this specific laptop browser has already been activated
         window.onload = function() {
             const systemToken = localStorage.getItem(HARDWARE_TOKEN_NAME);
             if (systemToken === APPROVED_TOKEN_VALUE) {
-                // Device is authorized. Remove lock screen immediately.
                 document.getElementById('lock-screen').style.display = 'none';
             }
         };
 
-        // Activation function run by you on client's laptop
         function verifyAndActivate() {
             const userInput = document.getElementById('key-input').value;
             if (userInput === MASTER_ACTIVATION_KEY) {
-                // Drop the permanent lock token into this specific browser session
                 localStorage.setItem(HARDWARE_TOKEN_NAME, APPROVED_TOKEN_VALUE);
                 document.getElementById('lock-screen').style.display = 'none';
             } else {
@@ -200,27 +218,30 @@
             }
         }
 
-        // --- DASHBOARD FUNCTIONS ---
-        // Dynamically switch layouts to accommodate up to 5 indicators seamlessly
         function switchLayout(mode) {
-            const box1 = document.getElementById('box-1');
-            const box2 = document.getElementById('box-2');
+            const allBoxes = [
+                document.getElementById('box-1'), 
+                document.getElementById('box-2'), 
+                document.getElementById('box-3'), 
+                document.getElementById('box-4'), 
+                document.getElementById('box-5')
+            ];
             const buttons = document.querySelectorAll('.tab-btn');
             
             buttons.forEach(btn => btn.classList.remove('active'));
-            
+            if(event) event.target.classList.add('active');
+
             if (mode === 'dual') {
-                box1.style.display = 'flex';
-                box2.style.display = 'flex';
-                event.target.classList.add('active');
-            } else if (mode === 'single1') {
-                box1.style.display = 'flex';
-                box2.style.display = 'none';
-                event.target.classList.add('active');
-            } else if (mode === 'single2') {
-                box1.style.display = 'none';
-                box2.style.display = 'flex';
-                event.target.classList.add('active');
+                allBoxes.forEach(box => box.style.display = 'none');
+                allBoxes[0].style.display = 'flex';
+                allBoxes[1].style.display = 'flex';
+            } else {
+                allBoxes.forEach(box => box.style.display = 'none');
+                if (mode === 'single1') allBoxes[0].style.display = 'flex';
+                if (mode === 'single2') allBoxes[1].style.display = 'flex';
+                if (mode === 'single3') allBoxes[2].style.display = 'flex';
+                if (mode === 'single4') allBoxes[3].style.display = 'flex';
+                if (mode === 'single5') allBoxes[4].style.display = 'flex';
             }
         }
     </script>
